@@ -37,6 +37,7 @@ import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class ClientEmulationStartup implements ClientEmulationStartupMBean,
         ClientEmulationMaster {
@@ -45,9 +46,6 @@ public class ClientEmulationStartup implements ClientEmulationStartupMBean,
             .getLogger(ClientEmulationStartup.class);
 
     private ExecutorService executor = Executors.newCachedThreadPool();
-
-    private ScheduledExecutorService scheduler = Executors
-            .newSingleThreadScheduledExecutor();
 
     private DatabaseResources databaseResources;
 
@@ -198,6 +196,9 @@ public class ClientEmulationStartup implements ClientEmulationStartupMBean,
             dbManager.setjdbcPath(this.databaseResources.getConnectionString());
             dbManager.setUserInfo(this.databaseResources.getUserName(), this.databaseResources.getPassword());
 
+            ScheduledThreadPoolExecutor ses = new ScheduledThreadPoolExecutor(this.workloadResources.getClients()/10);
+            ses.setMaximumPoolSize(this.workloadResources.getClients());
+            
             for (int i = 0; i < this.workloadResources.getClients(); i++) {
 
                 e = new ClientEmulation();
@@ -211,13 +212,10 @@ public class ClientEmulationStartup implements ClientEmulationStartupMBean,
                 e.setEmulationName(this.workloadResources.getPrefix());
                 e.setHostId(Integer.toString(this.workloadResources.getHostId()));
 
-                e.create(this.workloadResources.getEbClass(), this.workloadResources.getStClass(),
+                e.create(ses, this.workloadResources.getEbClass(), this.workloadResources.getStClass(),
                         i, this.workloadResources.getFrag(), this, this.workloadResources.getPrefix());
-
-                Thread t = new Thread(e);
-                t.setName(this.workloadResources.getPrefix() + "-" + i);
-                e.setThread(t);
-                t.start();
+                
+                e.start();
 
                 ebs.add(e);
             }
@@ -242,21 +240,11 @@ public class ClientEmulationStartup implements ClientEmulationStartupMBean,
                     continue;
                 }*/
             }
-
-	    for (int i = 0; i < this.workloadResources.getClients(); i++) {
-                e = (ClientEmulation) ebs.elementAt(i);
-                logger.info("Waiting for the eb " + i + " to finish its job..");
-                try {
-                   // e.setCompletion(true);
-                    e.getThread().join();
-                } catch (InterruptedException inte) {
-                    inte.printStackTrace();
-                    continue;
-                }
-            }
-
-
+            
             logger.info("EBs finished.");
+
+            ses.shutdownNow();
+            
             PerformanceLogger.info("-------------------- SUMMARY ---------------------------");
             PerformanceLogger.info("Abort rate:" + PerformanceCounters.getReference().getTotalAbortRate());
             PerformanceLogger.info("Average latency:"+PerformanceCounters.getReference().getAverageLatency());

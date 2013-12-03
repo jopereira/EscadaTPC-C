@@ -15,6 +15,7 @@
 package escada.tpc.common;
 
 import java.sql.SQLException;
+import java.util.concurrent.ScheduledExecutorService;
 
 public abstract class Emulation extends EmulationConfiguration implements PausableEmulation {
 	/**
@@ -46,41 +47,7 @@ public abstract class Emulation extends EmulationConfiguration implements Pausab
 	 * It proceeds with the emulation according to the host to which it belongs
 	 * and based on the benchmark's properties.
 	 * 
-	 * @param int
-	 *            host to which the emulator is attached to.
 	 * @see run,processIncrement
 	 */
-	public abstract void process(String hid) throws SQLException;
-
-	/**
-	 * It proceeds with the emulation according to the host to which it belongs
-	 * and based on the benchmark's properties.
-	 * 
-	 * @see run,processIncrement
-	 */
-	public void process() throws SQLException {
-		process(getHostId());
-	}
-
-	/**
-	 * In contrast to the process method, it executes just one transaction per
-	 * call according to the host to which it belongs and based on the
-	 * benchmark's properties.
-	 * 
-	 * @param int
-	 *            host to which the emulator is attached to.
-	 * @see run,process
-	 */
-	public abstract Object processIncrement(String hid) throws SQLException;
-
-	/**
-	 * In contrast to the process method, it executes just one transaction per
-	 * call according to the host to which it belongs and based on the
-	 * benchmark's properties.
-	 * 
-	 * @see run,process
-	 */
-	public Object processIncrement() throws SQLException {
-		return (processIncrement(getHostId()));
-	}
+	public abstract void process();
 }

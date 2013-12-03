@@ -17,9 +17,12 @@ package escada.tpc.tpcc;
 import escada.tpc.common.Emulation;
 import escada.tpc.common.StateObject;
 import escada.tpc.common.util.RandGen;
+
 import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * It extends the emulation class defining some methods according to the TPC-C
@@ -28,23 +31,22 @@ import java.sql.SQLException;
  * 
  * @see Emulation
  */
-public class TPCCEmulation extends Emulation {
+public class TPCCEmulation extends Emulation implements Runnable {
 	Logger logger = Logger.getLogger(TPCCEmulation.class);
 
 	StateObject curTrans = null;
 
 	// Pausable implementation
-	private boolean paused = false;
-
-	public void pause() {
+	private boolean paused = false, scheduled = false;
+	
+	public synchronized void pause() {
 		this.paused = true;
 	}
 
-	public void resume() {
+	public synchronized void resume() {
 		this.paused = false;
-		synchronized (this) {
-			this.notify();
-		}
+		if (!scheduled)
+			process();
 	}
 
 	public void stopit() {
@@ -64,60 +66,46 @@ public class TPCCEmulation extends Emulation {
 	public long keyingTime() {
 		return (curTrans.getKeyingTime());
 	}
-
-	public void process(String hid) throws SQLException {
-		try {
-			while ((getMaxTransactions() == -1) || (getMaxTransactions() > 0)) {
+	
+	public synchronized void process() {
+		scheduled = false;
+		
+		if  (!((getMaxTransactions() == -1) || (getMaxTransactions() > 0)))
+			return;
 				
-				if (isFinished()) {
-					logger.info("Client is returning.");
-					return;
-				}
-				
-				curTrans = getStateTransition().nextState();
-
-				setKeyingTime(keyingTime());
-				setThinkTime(getKeyingTime() + thinkTime());
-
-				if (getStatusThinkTime()) {
-					Thread.sleep(getThinkTime());
-				}
-
-				curTrans.requestProcess(this, hid);
-
-				curTrans.postProcess(this, hid);
-
-				// check if should pause
-				synchronized (this) {
-					while (paused) {
-						try {
-							this.wait();
-						} catch (InterruptedException e) {
-							logger.error("Unable to wait on pause!", e);
-						}
-					}
-				}
-			}
-		} catch (java.lang.InterruptedException it) {
-		}
-	}
-
-	public Object processIncrement(String hid) throws SQLException {
-		Object trans = null;
-
 		if (isFinished()) {
 			logger.info("Client is returning.");
-			return (trans);
+			return;
 		}
+
+		// check if should pause
+		if (paused)
+			return;
+			
 		curTrans = getStateTransition().nextState();
 
 		setKeyingTime(keyingTime());
 		setThinkTime(getKeyingTime() + thinkTime());
 
-		trans = curTrans.requestProcess(this, hid);
+		if (getStatusThinkTime())
+			getScheduler().schedule(this, getThinkTime(), TimeUnit.MILLISECONDS);
+		else
+			getScheduler().execute(this);
+		
+		scheduled = true;
+	}
 
-		curTrans.postProcess(this, hid);
+	public void run() {
+		try {
+			curTrans.requestProcess(this, getHostId());
 
-		return (trans);
+			curTrans.postProcess(this, getHostId());
+			
+			process();
+			
+		} catch (SQLException ex) {
+			logger.error("Finishing execution since something went wrong with this thread.", ex);
+			getScheduler().shutdownNow();
+		}
 	}
 }

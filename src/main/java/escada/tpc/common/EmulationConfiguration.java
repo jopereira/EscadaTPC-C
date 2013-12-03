@@ -15,6 +15,7 @@
 package escada.tpc.common;
 
 import java.util.Random;
+import java.util.concurrent.ScheduledExecutorService;
 
 import escada.tpc.common.database.DatabaseManager;
 
@@ -50,7 +51,7 @@ public abstract class EmulationConfiguration {
 
 	private String hid = null;
 
-	private Thread t = null;
+	private ScheduledExecutorService ses = null;
 
 	/**
 	 * It defines the maximum number of transactions that can be executed.
@@ -329,11 +330,11 @@ public abstract class EmulationConfiguration {
 		this.db = db;
 	}
 	
-	public void setThread(Thread t) {
-		this.t  = t;
+	public void setScheduler(ScheduledExecutorService ses) {
+		this.ses  = ses;
 	}
 	
-	public Thread getThread() {
-		return (t);
+	public ScheduledExecutorService getScheduler() {
+		return (ses);
 	}
 }

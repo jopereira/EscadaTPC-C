@@ -15,6 +15,7 @@
 package escada.tpc.common.clients;
 
 import java.sql.SQLException;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.log4j.Logger;
 
@@ -29,7 +30,7 @@ import escada.tpc.common.TPCConst;
  * 
  */
 public class ClientEmulation extends EmulationConfiguration implements
-		PausableEmulation, Runnable {
+		PausableEmulation {
 	private static Logger logger = Logger.getLogger(ClientEmulation.class);
 
 	private ClientEmulationMaster master;
@@ -66,7 +67,7 @@ public class ClientEmulation extends EmulationConfiguration implements
 	 * @param hid
 	 *            the host to which the client belongs
 	 */
-	public void create(String emParam, String stateParam, int ncli, int nfrag,
+	public void create(ScheduledExecutorService ses, String emParam, String stateParam, int ncli, int nfrag,
 			ClientEmulationMaster master, String controlKey) {
 
 		StateTransition s = null;
@@ -94,6 +95,7 @@ public class ClientEmulation extends EmulationConfiguration implements
 			e.setDatabase(this.getDatabase());
 			e.setEmulationName(this.getEmulationName());
 			e.setHostId(this.getHostId());
+			e.setScheduler(ses);
 
 			this.master = master;
 			this.controlKey = controlKey;
@@ -103,37 +105,6 @@ public class ClientEmulation extends EmulationConfiguration implements
 			ex.printStackTrace(System.err);
 			System.exit(-1);
 		}
-	}
-
-	/**
-	 * This function calls the appropriate emulation.
-	 */
-	public void run() {
-		try {
-			e.process();
-		} catch (SQLException ex) {
-			logger
-					.error(
-							"Notifying the master thread to finish execution since something went wrong with this thread.",
-							ex);
-			master.notifyThreadsError(controlKey);
-		}
-	}
-
-	/**
-	 * This function calls the step by step producer.
-	 * 
-	 * @return Object it returns an object Transaction
-	 */
-	public Object processIncrement() throws SQLException {
-		return (e.processIncrement());
-	}
-
-	/**
-	 * This function calls the producer.
-	 */
-	public void process() throws SQLException {
-		e.process();
 	}
 
 	public void pause() {
@@ -152,6 +123,10 @@ public class ClientEmulation extends EmulationConfiguration implements
 	public void setCompletion(boolean fin) {
 		setFinished(fin);
 		e.setFinished(fin);
+	}
+
+	public void start() {
+		e.process();
 	}
 }
 
