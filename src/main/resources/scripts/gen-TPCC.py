@@ -1,5 +1,5 @@
 from pyx import *
-from statlib import stats
+import numpy as stats
 import sys
 
 def main(args):
