@@ -196,8 +196,9 @@ public class ClientEmulationStartup implements ClientEmulationStartupMBean,
             dbManager.setjdbcPath(this.databaseResources.getConnectionString());
             dbManager.setUserInfo(this.databaseResources.getUserName(), this.databaseResources.getPassword());
 
-            ScheduledThreadPoolExecutor ses = new ScheduledThreadPoolExecutor(this.workloadResources.getClients()/10);
-            ses.setMaximumPoolSize(this.workloadResources.getClients());
+            ScheduledThreadPoolExecutor ses = new ScheduledThreadPoolExecutor(this.workloadResources.getPoolSize());
+            if (this.workloadResources.getClients() > this.workloadResources.getPoolSize())
+            	ses.setMaximumPoolSize(this.workloadResources.getClients());
             
             for (int i = 0; i < this.workloadResources.getClients(); i++) {
 
