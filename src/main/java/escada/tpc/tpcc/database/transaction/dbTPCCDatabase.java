@@ -14,13 +14,15 @@
 
 package escada.tpc.tpcc.database.transaction;
 
-import escada.tpc.common.database.DatabaseManager;
-import org.apache.log4j.Logger;
-
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Properties;
+
+import org.apache.log4j.Logger;
+
+import escada.tpc.common.database.DatabaseManager;
 
 /**
  * It defines the common methods that must be available at any dbImplementation
@@ -67,14 +69,7 @@ abstract public class dbTPCCDatabase extends DatabaseManager {
 
 			logger.info("Finishing transaction new order.");
 		} catch (java.sql.SQLException sqlex) {
-			if (Exception(sqlex)) {
-				if (con != null) {
-					con.close();
-					con = null;
-				}
-				throw sqlex;
-				
-			}
+			cleanup(con, sqlex);
 		} finally {
 				returnConnection(con);
 		}
@@ -117,13 +112,7 @@ abstract public class dbTPCCDatabase extends DatabaseManager {
 
 			logger.info("Finishing trasaction delivery.");
 		} catch (java.sql.SQLException sqlex) {
-			if (Exception(sqlex)) {
-				if (con != null) {
-					con.close();
-					con = null;
-				}				
-				throw sqlex;
-			}
+			cleanup(con, sqlex);
 		} finally {
 			returnConnection(con);
 		}
@@ -180,13 +169,7 @@ abstract public class dbTPCCDatabase extends DatabaseManager {
 
 			logger.info("Finishing transaction order status.");
 		} catch (java.sql.SQLException sqlex) {
-			if (Exception(sqlex)) {
-				if (con != null) {
-					con.close();
-					con = null;
-				}				
-				throw sqlex;
-			}
+			cleanup(con, sqlex);
 		} finally {
 				returnConnection(con);
 		}
@@ -249,13 +232,7 @@ abstract public class dbTPCCDatabase extends DatabaseManager {
 			logger.info("Finishing transaction payment.");
 
 		} catch (java.sql.SQLException sqlex) {
-			if (Exception(sqlex)) {
-				if (con != null) {
-					con.close();
-					con = null;
-				}				
-				throw sqlex;
-			}
+			cleanup(con, sqlex);
 		} finally {
 			returnConnection(con);
 		}
@@ -298,20 +275,14 @@ abstract public class dbTPCCDatabase extends DatabaseManager {
 
 			logger.info("Finishing transaction stock level");
 		} catch (java.sql.SQLException sqlex) {
-			if (Exception(sqlex)) {
-				if (con != null) {
-					con.close();
-					con = null;
-				}				
-				throw sqlex;
-			}
+			cleanup(con, sqlex);
 		} finally {
 			returnConnection(con);
 		}
 		return (dbtrace);
 	}
 	
-	private boolean Exception(java.sql.SQLException sqlex){
+	private boolean isUnexpected(SQLException sqlex){
 		if ((sqlex.getMessage().indexOf("serialize") == -1)
                                         && (sqlex.getMessage().indexOf("deadlock") == -1)
                                         && (sqlex.getMessage().indexOf("timeout") == -1)
@@ -322,6 +293,19 @@ abstract public class dbTPCCDatabase extends DatabaseManager {
                                         && (sqlex.getMessage().indexOf("Before start of result set") == -1)
 					&& (sqlex.getMessage().indexOf("transaction commit") == -1)) return true;
 		else return false;
+	}
+	
+	private void cleanup(Connection con, SQLException sqlex) throws SQLException {
+		if (isUnexpected(sqlex)) {
+			if (con != null) {
+				try {
+					con.close();
+				} catch(SQLException ex) {
+					logger.error("error while cleaning up, see next exception for root cause", ex);
+				}
+			}
+			throw sqlex;
+		}
 	}
 
 	protected abstract HashSet NewOrderDB(Properties obj, Connection con)
