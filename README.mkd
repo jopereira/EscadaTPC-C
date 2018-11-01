@@ -11,10 +11,9 @@ All dependencies are automatically fetched by Maven.
 
 Once you have downloaded the source directory you should change dir into it and issue:
 
-1. $ mvn package
-2. $ mvn assembly:assembly
+  mvn package
 
-This creates a tar.gz with the full benchmark.
+This creates a zip or tar.gz with the full benchmark in the target folder.
 
 # Configuration
 
@@ -86,6 +85,7 @@ clients are started through JMX or executed directly:
          -hostId <arg>               Host identifier, allow to have statistics per
                                      host.
 
+
 # Feedback
 
 Updated source and an issue tracker are available at:
@@ -94,7 +94,7 @@ Updated source and an issue tracker are available at:
 
 Your feedback is welcome.
 
-#Authors
+# Authors
 
 The following people have contributed to this project from 2004 to 2008 within the GORDA project (FP6-IST2-004758):
  - Alfranio Correia
@@ -103,11 +103,10 @@ The following people have contributed to this project from 2004 to 2008 within t
  - Nuno Carvalho
  - Ricardo Vilaca
 
-#Acknowledgement
+# Acknowledgement
 
 This project has been partially supported by the EU Comission through the GORDA project (FP6-IST2-004758).
 
 #Contact
 
 Ricardo Vilaca (<rmvilaca@di.uminho.pt>)
-
