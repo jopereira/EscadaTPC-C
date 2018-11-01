@@ -51,9 +51,9 @@
 
     <!-- Runtime dependencies -->
     <dependency>
-      <groupId>postgresql</groupId>
+      <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>8.0-318.jdbc3</version>
+      <version>42.2.1</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
