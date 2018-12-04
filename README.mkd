@@ -40,7 +40,6 @@ This etc folder contains the:
     - prefix: It defines the composition of the trace file identification and is also used as a component of the emulator id
     - pool.size: The number of entries available for connection pool...
     - pool.enabled: If the pool is enabled or not.
-    - measurement.interval: Minutes used for measuring SUT performance
     - measurement.time: Measurement interval, minutes used for measuring SUT performance.
     - resubmit.aborted: It enables the transaction resubmission when an error occurs.
     - measurement.think.time: Enables/Disables user keying time
@@ -107,6 +106,6 @@ The following people have contributed to this project from 2004 to 2008 within t
 
 This project has been partially supported by the EU Comission through the GORDA project (FP6-IST2-004758).
 
-#Contact
+# Contact
 
 Ricardo Vilaca (<rmvilaca@di.uminho.pt>)

@@ -199,7 +199,11 @@ public class ClientEmulationStartup implements ClientEmulationStartupMBean,
             ScheduledThreadPoolExecutor ses = new ScheduledThreadPoolExecutor(this.workloadResources.getPoolSize());
             if (this.workloadResources.getClients() > this.workloadResources.getPoolSize())
             	ses.setMaximumPoolSize(this.workloadResources.getClients());
-            
+
+            if (this.workloadResources.getNumberOfWarehouses()*this.workloadResources.getNumMinClients() != this.workloadResources.getClients()) {
+                logger.warn("Client emulators not evenly distributed across warehouses!!!");
+            }
+
             for (int i = 0; i < this.workloadResources.getClients(); i++) {
 
                 e = new ClientEmulation();

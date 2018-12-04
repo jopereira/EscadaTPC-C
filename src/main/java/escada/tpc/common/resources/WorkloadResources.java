@@ -89,9 +89,12 @@ public class WorkloadResources implements WorkloadResourcesMBean {
         this.resubmit=new Boolean(props.getProperty("resubmit"));
 
         this.prefix=props.getProperty("prefix");
-        this.clients=new Integer(props.getProperty("clients"));
+        this.clients=new Integer(props.getProperty("clients", "-1"));
         this.frag=new Integer(props.getProperty("frag"));
         this.hostId=new Integer(props.getProperty("hostId"));
+
+        if (this.clients < 0)
+            this.clients = this.numberOfWarehouses*this.getNumMinClients();
 
 	this.probNewOrder=new Integer(props.getProperty("tpcc.prob.NewOrder","45")).intValue();
 	this.probPayment=new Integer(props.getProperty("tpcc.prob.Payment","43")).intValue();

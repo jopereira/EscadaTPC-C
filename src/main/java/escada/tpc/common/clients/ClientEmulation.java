@@ -72,7 +72,7 @@ public class ClientEmulation extends EmulationConfiguration implements
 
 		StateTransition s = null;
 
-		logger.info("Starting " + ncli + " Ems.");
+		logger.info("Starting emulator #" + ncli);
 
 		try {
 			e = (Emulation) Class.forName(emParam).newInstance();
