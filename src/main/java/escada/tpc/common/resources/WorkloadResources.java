@@ -61,6 +61,7 @@ public class WorkloadResources implements WorkloadResourcesMBean {
 		Properties props = new Properties();
 		try {
 			props.load(inStream);
+			inStream.close();
 		} catch (IOException e) {
 			logger.fatal("Unable to load properties from file (workload-config.properties). Using defaults!", e);
 		}
