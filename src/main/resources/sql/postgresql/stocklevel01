@@ -1,4 +1,4 @@
-drop function tpcc_stocklevel(int,int,int);
+drop function if exists tpcc_stocklevel(int,int,int);
 
 create function tpcc_stocklevel(int,int,int) returns refcursor as
 '

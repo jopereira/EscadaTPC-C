@@ -1,4 +1,4 @@
-drop function tpcc_neworder(int,int,int,int,int,unknown,unknown,unknown);
+drop function if exists tpcc_neworder(int,int,int,int,int,unknown,unknown,unknown);
 
 create function tpcc_neworder(int,int,int,int,int,character,character,character) returns refcursor as 
 '

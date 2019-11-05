@@ -1,4 +1,4 @@
-drop function tpcc_delivery(int,int);
+drop function if exists tpcc_delivery(int,int);
 
 create function tpcc_delivery(int,int) returns refcursor as
 '

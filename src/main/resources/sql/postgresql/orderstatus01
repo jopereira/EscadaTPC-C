@@ -1,4 +1,4 @@
-drop function tpcc_orderstatus(int,int,int,char(16));
+drop function if exists tpcc_orderstatus(int,int,int,char(16));
 
 create function tpcc_orderstatus(int,int,int,char(16)) returns refcursor as
 '
