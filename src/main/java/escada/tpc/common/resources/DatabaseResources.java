@@ -106,7 +106,7 @@ public class DatabaseResources implements DatabaseResourcesMBean {
 		Properties props = new Properties();
 		try {
 			props.load(inStream);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			logger.warn("Unable to load properties from file (database-config.properties). Using defaults!", e);
 		}
 		
