@@ -491,8 +491,6 @@ public class dbPostgresql extends dbTPCCDatabase {
 			Date NetStartTime = new java.util.Date();
 
 			statement = con.createStatement();
-			statement.execute("begin transaction");
-			statement.execute("set transaction isolation level serializable");
 			statement.execute("select '" + strTrans + "'");
 
 			Date NetFinishTime = new java.util.Date();
@@ -514,8 +512,7 @@ public class dbPostgresql extends dbTPCCDatabase {
 			try {
 				Date NetStartTime = new java.util.Date();
 
-				statement = con.createStatement();
-				statement.execute("commit transaction");
+				con.commit();
 
 				Date NetFinishTime = new java.util.Date();
 
@@ -540,8 +537,7 @@ public class dbPostgresql extends dbTPCCDatabase {
 		try {
 			Date NetStartTime = new java.util.Date();
 
-			statement = con.createStatement();
-			statement.execute("rollback transaction");
+			con.rollback();
 
 			Date NetFinishTime = new java.util.Date();
 

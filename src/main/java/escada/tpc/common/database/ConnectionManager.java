@@ -46,6 +46,8 @@ public class ConnectionManager {
 
 	private int maxConn = 1;
 
+	private String isolation = "";
+
 	/*
 	 * It defines the maximum number of available connections. This information
 	 * must be configured according to the sets of the database, therefore
@@ -95,6 +97,10 @@ public class ConnectionManager {
 	public void setUserInfo(String usr, String pass) {
 		user = usr;
 		passwd = pass;
+	}
+
+	public void setIsolation(String isolation) {
+		this.isolation = isolation.toUpperCase();
 	}
 
 	/**
@@ -207,6 +213,28 @@ public class ConnectionManager {
 			while (true) {
 				con = DriverManager.getConnection(jdbcPath, user, passwd);
 				con.setAutoCommit(false);
+				if (!isolation.equals("") && !isolation.equals("DEFAULT")) {
+					switch (isolation) {
+						case "SERIALIZABLE":
+						case "S":
+							con.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+							break;
+						case "REPEATABLE_READ":
+						case "RR":
+							con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+							break;
+						case "READ_COMMITTED":
+						case "RC":
+							con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+							break;
+						case "READ_UNCOMMITTED":
+						case "RU":
+							con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+							break;
+						default:
+							throw new RuntimeException("invalid isolation level: "+isolation);
+					}
+				}
 				break;
 			}
 			totalConnections++;

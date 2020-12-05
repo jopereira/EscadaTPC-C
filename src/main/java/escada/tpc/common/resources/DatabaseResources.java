@@ -30,12 +30,14 @@ public class DatabaseResources implements DatabaseResourcesMBean {
 	public static final String DEFAULT_DRIVER = "org.postgresql.Driver";
 	public static final String DEFAULT_JDBC_CONN_STRING = "jdbc:postgresql://localhost/tpcc";
 	public static final String DEFAULT_USER_NAME = "refmanager";
-	public static String DEFAULT_PASSWORD = "";	
+	public static String DEFAULT_PASSWORD = "";
+	public static String DEFAULT_ISOLATION = "SERIALIZABLE";
 		
 	private String driver = DEFAULT_DRIVER;
 	private String connString = DEFAULT_JDBC_CONN_STRING;
 	private String userName = DEFAULT_USER_NAME;
 	private String password = DEFAULT_PASSWORD;
+	private String isolation = DEFAULT_ISOLATION;
 
 	/* (non-Javadoc)
 	 * @see escada.tpc.common.resources.DatabaseResourcesMBean#getDriver()
@@ -99,6 +101,13 @@ public class DatabaseResources implements DatabaseResourcesMBean {
 		this.password = password;
 	}
 
+	public String getIsolation() {
+		return isolation;
+	}
+
+	public void setIsolation(String isolation) {
+		this.isolation = isolation;
+	}
 
 	public DatabaseResources() {
 		
@@ -114,5 +123,6 @@ public class DatabaseResources implements DatabaseResourcesMBean {
 		this.driver = props.getProperty("db.driver", DEFAULT_DRIVER);
 		this.userName = props.getProperty("db.username", DEFAULT_USER_NAME);
 		this.password = props.getProperty("db.password", DEFAULT_PASSWORD);
+		this.isolation = props.getProperty("db.isolation", DEFAULT_ISOLATION);
 	}
 }

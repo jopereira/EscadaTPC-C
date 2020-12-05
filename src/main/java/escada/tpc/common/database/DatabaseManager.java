@@ -103,6 +103,10 @@ public class DatabaseManager {
 		cn.setUserInfo(usr, pass);
 	}
 
+	public void setIsolation(String isolation) {
+		cn.setIsolation(isolation);
+	}
+
 	/**
 	 * It retrieves a new connection in order to access the database. It is
 	 * important to notice that this new connection is usually obtained from a

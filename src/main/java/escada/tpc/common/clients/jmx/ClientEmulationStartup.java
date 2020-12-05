@@ -195,6 +195,7 @@ public class ClientEmulationStartup implements ClientEmulationStartupMBean,
             dbManager.setDriverName(this.databaseResources.getDriver());
             dbManager.setjdbcPath(this.databaseResources.getConnectionString());
             dbManager.setUserInfo(this.databaseResources.getUserName(), this.databaseResources.getPassword());
+            dbManager.setIsolation(this.databaseResources.getIsolation());
 
             ScheduledThreadPoolExecutor ses = new ScheduledThreadPoolExecutor(this.workloadResources.getPoolSize());
             if (this.workloadResources.getClients() > this.workloadResources.getPoolSize())

@@ -49,8 +49,8 @@ public class dbPostgresql extends dbCLUSTERDatabase {
 			Date NetStartTime = new java.util.Date();
 
 			statement = con.createStatement();
-			statement.execute("begin transaction");
-			statement.execute("set transaction isolation level serializable");
+			//statement.execute("begin transaction");
+			//statement.execute("set transaction isolation level serializable");
 			statement.execute("select '" + strTrans + "'");
 
 			Date NetFinishTime = new java.util.Date();
